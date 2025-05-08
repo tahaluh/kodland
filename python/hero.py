@@ -51,22 +51,24 @@ class Hero:
                 self.idle_frame = (self.idle_frame + 1) % len(self.idle_frames)
                 self.actor.image = self.idle_frames[self.idle_frame]
                 self.anim_timer = 0
+            
+            dx = 0
+            dy = 0
             if self.keyboard.right:
-                newPos = self.actor.grid_pos[0] + 1
-                if newPos < COLS:
-                    self.actor.target_pos[0] = newPos
-            elif self.keyboard.left:
-                newPos = self.actor.grid_pos[0] - 1
-                if newPos >= 0:
-                    self.actor.target_pos[0] = newPos                
-            elif self.keyboard.down:
-                newPos = self.actor.grid_pos[1] + 1
-                if newPos < ROWS:
-                    self.actor.target_pos[1] = newPos
-            elif self.keyboard.up:
-                newPos = self.actor.grid_pos[1] - 1
-                if newPos >= 0:
-                    self.actor.target_pos[1] = newPos
+                dx += 1
+            if self.keyboard.left:
+                dx -= 1
+            if self.keyboard.down:
+                dy += 1
+            if self.keyboard.up:
+                dy -= 1
+
+            if dx != 0 or dy != 0:
+                new_x = self.actor.grid_pos[0] + dx
+                new_y = self.actor.grid_pos[1] + dy
+                if 0 <= new_x < COLS and 0 <= new_y < ROWS:
+                    self.actor.target_pos = [new_x, new_y]
+
 
     def draw(self):
         self.actor.draw()
