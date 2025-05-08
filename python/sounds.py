@@ -10,11 +10,7 @@ class SoundManager:
         return cls._instance
 
     def __init__(self, music=None, sounds=None):
-        print("Initializing SoundManager")
-        print(f"Music: {music}") 
-        print(f"Sounds: {sounds}")
         if self._initialized:
-            print("SoundManager already initialized.")
             return  
         self.music = music
         self.sounds = sounds
@@ -41,13 +37,9 @@ class SoundManager:
         self.play_sound(self.sounds.click_001)
 
     def start_music(self):
-        print("Iniciando música")
-        print(f"Music: {self.music_on}")
-        print(f"Music object: {self.music}")
         if self.music_on and self.music:
-            print("Tentando tocar música")
             try:
                 self.music.play('theme')
                 self.music.set_volume(0.5)
             except:
-                print("Música não carregada.")
+                print("Error playing music")

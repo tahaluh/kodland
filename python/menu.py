@@ -1,21 +1,33 @@
 # menu.py
+from settings import WIDTH, HEIGHT
 from pygame import Rect
 
 class MenuManager:
     def __init__(self, sound_manager):
         self.sound_manager = sound_manager
 
-        self.buttons = {
-            "start": Rect(220, 150, 200, 40),
-            "sound": Rect(220, 210, 200, 40),
-            "exit": Rect(220, 270, 200, 40),
-        }
+        btn_w, btn_h = 200, 40
+        spacing = 20
+        
+        labels = ["start", "sound", "exit"]
+        total_h = len(labels) * btn_h + (len(labels)-1) * spacing
 
-        self.sound_buttons = {
-            "toggle_music": Rect(200, 150, 240, 40),
-            "toggle_sound": Rect(200, 210, 240, 40),
-            "back": Rect(200, 270, 240, 40),
-        }
+        start_y = HEIGHT//2 - total_h//2
+
+        self.buttons = {}
+        for i, label in enumerate(labels):
+            x = WIDTH//2 - btn_w//2
+            y = start_y + i * (btn_h + spacing)
+            self.buttons[label] = Rect(x, y, btn_w, btn_h)
+
+        labels2 = ["toggle_music", "toggle_sound", "back"]
+        total_h2 = len(labels2) * btn_h + (len(labels2)-1) * spacing
+        start_y2 = HEIGHT//2 - total_h2//2
+        self.sound_buttons = {}
+        for i, label in enumerate(labels2):
+            x = WIDTH//2 - btn_w//2
+            y = start_y2 + i * (btn_h + spacing)
+            self.sound_buttons[label] = Rect(x, y, btn_w, btn_h)
 
     def draw_menu(self, screen):
         screen.fill((30, 30, 30))
