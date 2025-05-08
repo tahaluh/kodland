@@ -1,0 +1,4 @@
+WIDTH = 640
+HEIGHT = 480
+TILE_SIZE = 32
+HERO_COLOR = 'blue'
