@@ -12,11 +12,9 @@ class Labyrinth:
         self.add_speed_boost_squares()
 
     def generate_maze(self):
-        # Use recursive backtracking algorithm
         def carve_path(x, y):
-            self.grid[y][x] = 0  # Mark as path
+            self.grid[y][x] = 0
             
-            # Randomize directions
             directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
             random.shuffle(directions)
             
@@ -25,53 +23,46 @@ class Labyrinth:
                 
                 if (0 <= nx < self.width and 0 <= ny < self.height and 
                     self.grid[ny][nx] == 1):
-                    # Carve through the wall
                     self.grid[y + dy][x + dx] = 0
                     carve_path(nx, ny)
         
-        # Start from a random point
         start_x, start_y = random.randrange(1, self.width-1, 2), random.randrange(1, self.height-1, 2)
         carve_path(start_x, start_y)
 
     def set_entrance_and_exit(self):
-        # First map: entrance in the middle
         mid_x, mid_y = self.width // 2, self.height // 2
-        self.grid[mid_y][mid_x] = 2  # Entrance marker
+        self.grid[mid_y][mid_x] = 2
         
-        # Randomly choose an exit on the border
         border_sides = ['top', 'bottom', 'left', 'right']
         exit_side = random.choice(border_sides)
         
         if exit_side == 'top':
             x = random.randrange(1, self.width-1, 2)
-            self.grid[0][x] = 3  # Exit marker
+            self.grid[0][x] = 3
         elif exit_side == 'bottom':
             x = random.randrange(1, self.width-1, 2)
             self.grid[self.height-1][x] = 3
         elif exit_side == 'left':
             y = random.randrange(1, self.height-1, 2)
             self.grid[y][0] = 3
-        else:  # right
+        else:
             y = random.randrange(1, self.height-1, 2)
             self.grid[y][self.width-1] = 3
 
     def add_speed_boost_squares(self, num_squares=10):
-        # Add speed boost squares to empty paths
         attempts = 0
         while len(self.speed_boost_squares) < num_squares and attempts < 100:
             x = random.randrange(1, self.width-1)
             y = random.randrange(1, self.height-1)
             
-            # Ensure it's not a wall, entrance, exit, or already a speed boost square
             if (self.grid[y][x] == 0 and 
                 (x, y) not in self.speed_boost_squares):
-                self.grid[y][x] = 4  # Speed boost marker
+                self.grid[y][x] = 4
                 self.speed_boost_squares.add((x, y))
             
             attempts += 1
 
     def discover_around_player(self, player_x, player_y):
-        # Adjacent blocks: 8 surrounding tiles
         adjacent_offsets = [
             (-1, -1), (-1, 0), (-1, 1),
             (0, -1), (0, 1),

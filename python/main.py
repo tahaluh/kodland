@@ -31,7 +31,7 @@ def draw_game():
 
     # Speed boost squares
     for x, y in hero.labyrinth.speed_boost_squares:
-        # Rainbow border animation
+        # Rainbow colors
         rainbow_colors = [
             (255, 0, 0),   # Red
             (255, 165, 0), # Orange
@@ -43,17 +43,19 @@ def draw_game():
         ]
         
         # Cycle through rainbow colors based on game time
-        color_index = int(pygame.time.get_ticks() / 500) % len(rainbow_colors)
-        border_color = rainbow_colors[color_index]
+        color_index = int(pygame.time.get_ticks() / 50) % len(rainbow_colors)
+        fill_color = rainbow_colors[color_index]
+        border_color = rainbow_colors[(color_index + 1) % len(rainbow_colors)]
         
-        # Draw the speed boost square with a rainbow border
+        # Draw the speed boost square with a rainbow border and fill
         rect_x = x * TILE_SIZE
         rect_y = y * TILE_SIZE
         
-        # Fill the square
-        screen.draw.filled_rect(Rect((rect_x, rect_y), (TILE_SIZE, TILE_SIZE)), color=(100, 255, 100))
+        # Fill the square with a rainbow color
+        screen.draw.filled_rect(Rect((rect_x, rect_y), (TILE_SIZE, TILE_SIZE)), color=fill_color)
         
-        # Draw border lines manually
+        # Thicker rainbow border
+        border_thickness = 3
         screen.draw.line((rect_x, rect_y), (rect_x + TILE_SIZE, rect_y), border_color)
         screen.draw.line((rect_x + TILE_SIZE, rect_y), (rect_x + TILE_SIZE, rect_y + TILE_SIZE), border_color)
         screen.draw.line((rect_x + TILE_SIZE, rect_y + TILE_SIZE), (rect_x, rect_y + TILE_SIZE), border_color)
