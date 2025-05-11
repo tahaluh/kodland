@@ -62,32 +62,7 @@ def draw_game():
         screen.draw.line((rect_x, rect_y + TILE_SIZE), (rect_x, rect_y), border_color)
 
     # Labyrinth
-    for y in range(ROWS):
-        for x in range(COLS):
-            tile_x = x * TILE_SIZE
-            tile_y = y * TILE_SIZE
-            
-            # Wall tiles
-            if hero.labyrinth.is_discovered(x, y):
-                if hero.labyrinth.is_wall(x, y):
-                    screen.draw.filled_rect(
-                        Rect((tile_x, tile_y), (TILE_SIZE, TILE_SIZE)), 
-                        color=(30, 30, 30)
-                    )
-                
-                # Exit tile
-                elif hero.labyrinth.grid[y][x] == 3:
-                    screen.draw.filled_rect(
-                        Rect((tile_x, tile_y), (TILE_SIZE, TILE_SIZE)), 
-                        color=(255, 0, 0)  # Red
-                    )
-            
-            # Fog for undiscovered tiles
-            if not hero.labyrinth.is_discovered(x, y):
-                screen.draw.filled_rect(
-                    Rect((tile_x, tile_y), (TILE_SIZE, TILE_SIZE)), 
-                    color=(20, 20, 20)  # Dark fog
-                )
+    hero.labyrinth.draw_labyrinth(screen)
     
     # Grid lines
     grid_color = (50, 50, 50)

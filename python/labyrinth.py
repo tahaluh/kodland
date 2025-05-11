@@ -1,4 +1,7 @@
 import random
+import pygame
+from pgzero.rect import Rect
+from settings import TILE_SIZE
 
 class Labyrinth:
     def __init__(self, width, height):
@@ -101,3 +104,55 @@ class Labyrinth:
                 if self.grid[y][x] == 3:
                     return x, y
         return None
+
+    def draw_labyrinth(self, screen):
+        for y in range(self.height):
+            for x in range(self.width):
+                tile_x = x * TILE_SIZE
+                tile_y = y * TILE_SIZE
+                
+                if self.is_discovered(x, y):
+                    if self.is_wall(x, y):
+                        screen.draw.filled_rect(
+                            Rect((tile_x, tile_y), (TILE_SIZE, TILE_SIZE)), 
+                            color=(30, 30, 30)
+                        )
+                    
+                    elif self.grid[y][x] == 3:
+                        screen.draw.filled_rect(
+                            Rect((tile_x, tile_y), (TILE_SIZE, TILE_SIZE)), 
+                            color=(255, 0, 0)  # Red
+                        )
+                
+                if not self.is_discovered(x, y):
+                    screen.draw.filled_rect(
+                        Rect((tile_x, tile_y), (TILE_SIZE, TILE_SIZE)), 
+                        color=(20, 20, 20)  # Dark fog
+                    )
+
+        for x, y in self.speed_boost_squares:
+            if self.is_discovered(x, y):
+                rainbow_colors = [
+                    (255, 0, 0),   # Red
+                    (255, 165, 0), # Orange
+                    (255, 255, 0), # Yellow
+                    (0, 255, 0),   # Green
+                    (0, 0, 255),   # Blue
+                    (75, 0, 130),  # Indigo
+                    (238, 130, 238) # Violet
+                ]
+                
+                color_index = int(pygame.time.get_ticks() / 50) % len(rainbow_colors)
+                fill_color = rainbow_colors[color_index]
+                border_color = rainbow_colors[(color_index + 1) % len(rainbow_colors)]
+                
+                rect_x = x * TILE_SIZE
+                rect_y = y * TILE_SIZE
+                
+                screen.draw.filled_rect(Rect((rect_x, rect_y), (TILE_SIZE, TILE_SIZE)), color=fill_color)
+                
+                border_thickness = 3
+                screen.draw.line((rect_x, rect_y), (rect_x + TILE_SIZE, rect_y), border_color)
+                screen.draw.line((rect_x + TILE_SIZE, rect_y), (rect_x + TILE_SIZE, rect_y + TILE_SIZE), border_color)
+                screen.draw.line((rect_x + TILE_SIZE, rect_y + TILE_SIZE), (rect_x, rect_y + TILE_SIZE), border_color)
+                screen.draw.line((rect_x, rect_y + TILE_SIZE), (rect_x, rect_y), border_color)
