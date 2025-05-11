@@ -31,7 +31,7 @@ class MenuManager:
 
     def draw_menu(self, screen):
         screen.fill((30, 30, 30))
-        screen.draw.text("ROGUELIKE GAME", center=(screen.width // 2, 80), fontsize=40, color="white")
+        screen.draw.text("Labirintus", center=(screen.width // 2, 80), fontsize=40, color="white")
         for label, rect in self.buttons.items():
             screen.draw.filled_rect(rect, (50, 50, 150))
             screen.draw.text(label.upper(), center=rect.center, fontsize=30, color="white")

@@ -22,7 +22,9 @@ class Hero:
         self.actor = Actor(idle_frames[0], (x, y))
         self.actor.grid_pos = list(start_grid)
         self.actor.target_pos = list(start_grid)
-        self.actor.speed = 4
+        self.base_speed = 1
+        self.speed_boosts_collected = 0  
+        self.actor.speed = self.base_speed
 
         self.walk_frame = 0
         self.idle_frame = 0
@@ -68,6 +70,13 @@ class Hero:
                 self.anim_timer = 0
                 self.idle_frame = 0
                 self.actor.image = idle_frames[self.idle_frame]
+                
+                x, y = self.actor.grid_pos
+                if self.labyrinth.is_speed_boost_square(x, y):
+                    print(f"Speed boost activated! +50% speed")
+                    self.actor.speed = self.actor.speed * 1.5
+                    self.labyrinth.remove_speed_boost_square(x, y)
+                
                 self.labyrinth.discover_around_player(
                     self.actor.grid_pos[0], self.actor.grid_pos[1]
                 )

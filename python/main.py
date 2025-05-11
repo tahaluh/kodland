@@ -29,6 +29,36 @@ def draw_game():
     # stars
     starfield.draw(screen) 
 
+    # Speed boost squares
+    for x, y in hero.labyrinth.speed_boost_squares:
+        # Rainbow border animation
+        rainbow_colors = [
+            (255, 0, 0),   # Red
+            (255, 165, 0), # Orange
+            (255, 255, 0), # Yellow
+            (0, 255, 0),   # Green
+            (0, 0, 255),   # Blue
+            (75, 0, 130),  # Indigo
+            (238, 130, 238) # Violet
+        ]
+        
+        # Cycle through rainbow colors based on game time
+        color_index = int(pygame.time.get_ticks() / 500) % len(rainbow_colors)
+        border_color = rainbow_colors[color_index]
+        
+        # Draw the speed boost square with a rainbow border
+        rect_x = x * TILE_SIZE
+        rect_y = y * TILE_SIZE
+        
+        # Fill the square
+        screen.draw.filled_rect(Rect((rect_x, rect_y), (TILE_SIZE, TILE_SIZE)), color=(100, 255, 100))
+        
+        # Draw border lines manually
+        screen.draw.line((rect_x, rect_y), (rect_x + TILE_SIZE, rect_y), border_color)
+        screen.draw.line((rect_x + TILE_SIZE, rect_y), (rect_x + TILE_SIZE, rect_y + TILE_SIZE), border_color)
+        screen.draw.line((rect_x + TILE_SIZE, rect_y + TILE_SIZE), (rect_x, rect_y + TILE_SIZE), border_color)
+        screen.draw.line((rect_x, rect_y + TILE_SIZE), (rect_x, rect_y), border_color)
+
     # Labyrinth
     for y in range(ROWS):
         for x in range(COLS):
@@ -91,10 +121,8 @@ def update():
     if game_state == 'game':
         hero.update()
         starfield.update()
-        
-        # Check if player has reached exit
+         
         if hero.has_reached_exit():
-            # Move to next maze
             hero = Hero(
                 start_grid=(1, 1), 
                 keyboard=keyboard, 

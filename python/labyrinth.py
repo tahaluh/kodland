@@ -6,8 +6,10 @@ class Labyrinth:
         self.height = height
         self.grid = [[1 for _ in range(width)] for _ in range(height)]
         self.discovered_grid = [[False for _ in range(width)] for _ in range(height)]
+        self.speed_boost_squares = set()
         self.generate_maze()
         self.set_entrance_and_exit()
+        self.add_speed_boost_squares()
 
     def generate_maze(self):
         # Use recursive backtracking algorithm
@@ -53,6 +55,21 @@ class Labyrinth:
             y = random.randrange(1, self.height-1, 2)
             self.grid[y][self.width-1] = 3
 
+    def add_speed_boost_squares(self, num_squares=10):
+        # Add speed boost squares to empty paths
+        attempts = 0
+        while len(self.speed_boost_squares) < num_squares and attempts < 100:
+            x = random.randrange(1, self.width-1)
+            y = random.randrange(1, self.height-1)
+            
+            # Ensure it's not a wall, entrance, exit, or already a speed boost square
+            if (self.grid[y][x] == 0 and 
+                (x, y) not in self.speed_boost_squares):
+                self.grid[y][x] = 4  # Speed boost marker
+                self.speed_boost_squares.add((x, y))
+            
+            attempts += 1
+
     def discover_around_player(self, player_x, player_y):
         # Adjacent blocks: 8 surrounding tiles
         adjacent_offsets = [
@@ -68,6 +85,14 @@ class Labyrinth:
 
     def is_wall(self, x, y):
         return self.grid[y][x] == 1
+
+    def is_speed_boost_square(self, x, y):
+        return self.grid[y][x] == 4
+
+    def remove_speed_boost_square(self, x, y):
+        if (x, y) in self.speed_boost_squares:
+            self.speed_boost_squares.remove((x, y))
+            self.grid[y][x] = 0  # Change to a regular path
 
     def is_discovered(self, x, y):
         return self.discovered_grid[y][x]
