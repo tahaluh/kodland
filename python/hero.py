@@ -1,10 +1,9 @@
 import settings
 from settings import TILE_SIZE, HERO_COLOR, COLS, ROWS
 from pgzero.actor import Actor
-from labyrinth import Labyrinth
 
 class Hero:
-    def __init__(self, start_grid=(1, 1), keyboard=None, current_maze=1, start_time=None):
+    def __init__(self, start_grid=(1, 1), keyboard=None, current_maze=1, start_time=None, labyrinth=None):
         self.keyboard = keyboard
         self.prefix = f'alien_{HERO_COLOR}'
         self.flipped = 0
@@ -12,7 +11,7 @@ class Hero:
         self.current_maze = current_maze
         self.start_time = start_time or settings.tick
 
-        self.labyrinth = Labyrinth(COLS, ROWS)
+        self.labyrinth = labyrinth
         start_grid = self.labyrinth.get_entrance()
 
         x = start_grid[0] * TILE_SIZE + TILE_SIZE // 2
@@ -22,7 +21,7 @@ class Hero:
         self.actor = Actor(idle_frames[0], (x, y))
         self.actor.grid_pos = list(start_grid)
         self.actor.target_pos = list(start_grid)
-        self.base_speed = 1
+        self.base_speed = 10
         self.speed_boosts_collected = 0  
         self.actor.speed = self.base_speed
 
@@ -116,3 +115,21 @@ class Hero:
 
     def draw(self):
         self.actor.draw()
+        
+    def pass_maze(self):
+        self.start_time = settings.tick
+        self.current_maze += 1
+        
+        start_grid = self.labyrinth.get_entrance()
+        
+        x = start_grid[0] * TILE_SIZE + TILE_SIZE // 2
+        y = start_grid[1] * TILE_SIZE + TILE_SIZE // 2
+        
+        self.actor.x = x
+        self.actor.y = y
+        self.actor.grid_pos = list(start_grid)
+        self.actor.target_pos = list(start_grid)
+        self.labyrinth.discover_around_player(start_grid[0], start_grid[1])
+        
+        
+        

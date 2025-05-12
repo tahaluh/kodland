@@ -1,17 +1,19 @@
 import pgzrun
 from pgzero.rect import Rect
 import settings
-from settings import WIDTH, HEIGHT, TILE_SIZE
+from settings import WIDTH, HEIGHT, TILE_SIZE, COLS, ROWS
 from menu import MenuManager
 from sounds import SoundManager
 from hero import Hero
 from stars import StarField 
+from labyrinth import Labyrinth
 
 game_state    = 'menu'
 sound_manager = SoundManager(music, sounds)
 sound_manager.start_music()
 menu          = MenuManager(sound_manager)
-hero          = Hero(start_grid=(1, 1), keyboard=keyboard)
+labyrinth     = Labyrinth(COLS, ROWS)
+hero          = Hero(start_grid=(1, 1), keyboard=keyboard, labyrinth=labyrinth)
 starfield     = StarField(count=200, big_chance=0.05, big_radius=2) 
 
 def draw():
@@ -68,11 +70,8 @@ def update():
         starfield.update()
          
         if hero.has_reached_exit():
-            hero = Hero(
-                start_grid=(1, 1), 
-                keyboard=keyboard, 
-                current_maze=hero.current_maze + 1
-            )
+            labyrinth.reset()
+            hero.pass_maze()
     settings.tick += 1
 
 

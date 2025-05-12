@@ -157,3 +157,11 @@ class Labyrinth:
                 screen.draw.line((rect_x + TILE_SIZE, rect_y), (rect_x + TILE_SIZE, rect_y + TILE_SIZE), border_color)
                 screen.draw.line((rect_x + TILE_SIZE, rect_y + TILE_SIZE), (rect_x, rect_y + TILE_SIZE), border_color)
                 screen.draw.line((rect_x, rect_y + TILE_SIZE), (rect_x, rect_y), border_color)
+
+    def reset(self):
+        self.grid = [[1 for _ in range(self.width)] for _ in range(self.height)]
+        self.discovered_grid = [[False for _ in range(self.width)] for _ in range(self.height)]
+        self.speed_boost_squares.clear()
+        self.generate_maze()
+        self.set_entrance_and_exit()
+        self.add_speed_boost_squares()
