@@ -59,7 +59,7 @@ class PowerupManager:
             screen.draw.text(powerup['name'], center=(x + option_width//2, y + 30), color='white', fontsize=24)
             screen.draw.text(powerup['description'], center=(x + option_width//2, y + 60), color=(200, 200, 200), fontsize=20)
 
-        screen.draw.text('Use arrow keys to select, SPACE to confirm', center=(WIDTH//2, HEIGHT - 50), color=(180, 180, 180), fontsize=20)
+        screen.draw.text('Use arrow keys to select, SPACE to confirm', center=(WIDTH//2, HEIGHT - 500), color=(180, 180, 180), fontsize=20)
 
         selected_x = WIDTH//2 - option_width//2
         selected_y = HEIGHT//2 + selected_powerup * (option_height + option_spacing)

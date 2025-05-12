@@ -21,7 +21,7 @@ class Hero:
         self.actor = Actor(idle_frames[0], (x, y))
         self.actor.grid_pos = list(start_grid)
         self.actor.target_pos = list(start_grid)
-        self.base_speed = 10
+        self.base_speed = 2
         self.speed_boosts_collected = 0  
         self.actor.speed = self.base_speed
         
