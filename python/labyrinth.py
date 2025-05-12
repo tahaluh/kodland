@@ -1,5 +1,6 @@
 import random
 import pygame
+import settings
 from pgzero.rect import Rect
 from settings import TILE_SIZE
 
@@ -142,7 +143,7 @@ class Labyrinth:
                     (238, 130, 238) # Violet
                 ]
                 
-                color_index = int(pygame.time.get_ticks() / 50) % len(rainbow_colors)
+                color_index = int(settings.tick / 6) % len(rainbow_colors)
                 fill_color = rainbow_colors[color_index]
                 border_color = rainbow_colors[(color_index + 1) % len(rainbow_colors)]
                 

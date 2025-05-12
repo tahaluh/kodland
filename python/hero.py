@@ -1,4 +1,4 @@
-import pygame
+import settings
 from settings import TILE_SIZE, HERO_COLOR, COLS, ROWS
 from pgzero.actor import Actor
 from labyrinth import Labyrinth
@@ -10,7 +10,7 @@ class Hero:
         self.flipped = 0
 
         self.current_maze = current_maze
-        self.start_time = start_time or pygame.time.get_ticks()
+        self.start_time = start_time or settings.tick
 
         self.labyrinth = Labyrinth(COLS, ROWS)
         start_grid = self.labyrinth.get_entrance()

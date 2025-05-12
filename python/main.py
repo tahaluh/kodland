@@ -1,7 +1,7 @@
 import pgzrun
-import pygame
 from pgzero.rect import Rect
-from settings import WIDTH, HEIGHT, TILE_SIZE, ROWS, COLS
+import settings
+from settings import WIDTH, HEIGHT, TILE_SIZE
 from menu import MenuManager
 from sounds import SoundManager
 from hero import Hero
@@ -29,38 +29,6 @@ def draw_game():
     # stars
     starfield.draw(screen) 
 
-    # Speed boost squares
-    for x, y in hero.labyrinth.speed_boost_squares:
-        # Rainbow colors
-        rainbow_colors = [
-            (255, 0, 0),   # Red
-            (255, 165, 0), # Orange
-            (255, 255, 0), # Yellow
-            (0, 255, 0),   # Green
-            (0, 0, 255),   # Blue
-            (75, 0, 130),  # Indigo
-            (238, 130, 238) # Violet
-        ]
-        
-        # Cycle through rainbow colors based on game time
-        color_index = int(pygame.time.get_ticks() / 50) % len(rainbow_colors)
-        fill_color = rainbow_colors[color_index]
-        border_color = rainbow_colors[(color_index + 1) % len(rainbow_colors)]
-        
-        # Draw the speed boost square with a rainbow border and fill
-        rect_x = x * TILE_SIZE
-        rect_y = y * TILE_SIZE
-        
-        # Fill the square with a rainbow color
-        screen.draw.filled_rect(Rect((rect_x, rect_y), (TILE_SIZE, TILE_SIZE)), color=fill_color)
-        
-        # Thicker rainbow border
-        border_thickness = 3
-        screen.draw.line((rect_x, rect_y), (rect_x + TILE_SIZE, rect_y), border_color)
-        screen.draw.line((rect_x + TILE_SIZE, rect_y), (rect_x + TILE_SIZE, rect_y + TILE_SIZE), border_color)
-        screen.draw.line((rect_x + TILE_SIZE, rect_y + TILE_SIZE), (rect_x, rect_y + TILE_SIZE), border_color)
-        screen.draw.line((rect_x, rect_y + TILE_SIZE), (rect_x, rect_y), border_color)
-
     # Labyrinth
     hero.labyrinth.draw_labyrinth(screen)
     
@@ -74,8 +42,8 @@ def draw_game():
     hero.draw()
     
     # Maze counter and timer
-    current_time = pygame.time.get_ticks()
-    elapsed_time = (current_time - hero.start_time) // 1000  # Convert to seconds
+    current_time = settings.tick
+    elapsed_time = (current_time - hero.start_time) // 60  # Convert to seconds
     
     # Draw maze number
     screen.draw.text(
@@ -105,6 +73,7 @@ def update():
                 keyboard=keyboard, 
                 current_maze=hero.current_maze + 1
             )
+    settings.tick += 1
 
 
 def on_mouse_down(pos):

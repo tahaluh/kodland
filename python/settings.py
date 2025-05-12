@@ -4,3 +4,5 @@ TILE_SIZE = 50
 HERO_COLOR = 'blue'
 COLS = WIDTH // TILE_SIZE
 ROWS = HEIGHT // TILE_SIZE
+
+tick = 0
