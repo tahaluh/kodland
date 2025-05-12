@@ -141,14 +141,23 @@ def draw_game_over():
     game_over_button = Rect(button_x, button_y, button_width, button_height)
 
 def on_mouse_down(pos):
-    global game_state, hero
+    global game_state, hero, labyrinth, starfield, powerup_manager
+    
     if game_state == 'menu':
         game_state = menu.handle_menu_click(pos, game_state)
     elif game_state == 'sound_menu':
         game_state = menu.handle_sound_menu_click(pos, game_state)
-    elif game_state == 'game_over':
+    elif game_state == 'game_over':        
+        if game_over_button is None:
+            return
         if game_over_button.collidepoint(pos):
             game_state = 'menu'
+                
+            sound_manager.start_music()
             labyrinth = Labyrinth(COLS, ROWS)
+            powerup_manager = PowerupManager()
             hero = Hero(start_grid=(1, 1), keyboard=keyboard, labyrinth=labyrinth, powerup_manager=powerup_manager)
+                
+            starfield = StarField(count=200, big_chance=0.05, big_radius=2)
+
 pgzrun.go()
