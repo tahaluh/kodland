@@ -12,6 +12,7 @@ from powerup import PowerupManager
 
 
 game_state    = 'menu'
+game_over_button = None  # Will be set in draw_game_over()
 sound_manager = SoundManager(music, sounds)
 sound_manager.start_music()
 menu          = MenuManager(sound_manager)
@@ -26,8 +27,10 @@ def draw():
         menu.draw_menu(screen)
     elif game_state == 'sound_menu':
         menu.draw_sound_menu(screen)
-    else:
+    elif game_state == 'game':
         draw_game()
+    elif game_state == 'game_over':
+        draw_game_over()
 
 def draw_game():
     screen.fill((0, 0, 0))
@@ -50,6 +53,7 @@ def draw_game():
     # Maze counter and timer
     current_time = settings.tick
     elapsed_time = (current_time - hero.start_time) // 60  # Convert to seconds
+    reaming_time = (labyrinth.time_limit - elapsed_time) // 60  # Convert to seconds
     
     # Draw maze number
     screen.draw.text(
@@ -61,7 +65,7 @@ def draw_game():
     
     # Draw timer
     screen.draw.text(
-        f'Time: {elapsed_time}s', 
+        f'Time: {reaming_time}s', 
         topright=(WIDTH-10, 10), 
         color='white', 
         fontsize=24
@@ -72,6 +76,15 @@ def update():
     if game_state == 'game':
         hero.update()
         starfield.update()
+        labyrinth.update()
+        
+        # Check for game over conditions
+        current_time = settings.tick
+        elapsed_time = (current_time - hero.start_time) // 60
+        remaining_time = (labyrinth.time_limit - elapsed_time) // 60
+        
+        if remaining_time <= 0:
+            game_state = 'game_over'
         
         # Handle powerup menu input
         if hero.show_powerup_menu:
@@ -83,8 +96,54 @@ def update():
         if hero.has_reached_exit():
             labyrinth.reset()
             hero.pass_maze()
+            
+        if labyrinth.time_limit <= 0:
+            game_state = 'game_over'
+            sound_manager.play_sound('game_over')
     settings.tick += 1
 
+def draw_game_over():
+    screen.fill((0, 0, 0))
+    
+    # Game Over text
+    screen.draw.text(
+        'GAME OVER', 
+        center=(WIDTH//2, HEIGHT//3), 
+        color='red', 
+        fontsize=72
+    )
+    
+    # Maze reached
+    screen.draw.text(
+        f'Maze Reached: {hero.current_maze}', 
+        center=(WIDTH//2, HEIGHT//2), 
+        color='white', 
+        fontsize=36
+    )
+    
+    # Back to Menu button
+    button_width, button_height = 200, 50
+    button_x = WIDTH//2 - button_width//2
+    button_y = HEIGHT * 2//3
+    
+    screen.draw.filled_rect(
+        Rect(button_x, button_y, button_width, button_height), 
+        color=(100, 100, 100)
+    )
+    screen.draw.rect(
+        Rect(button_x, button_y, button_width, button_height), 
+        color=(200, 200, 200)
+    )
+    screen.draw.text(
+        'Back to Menu', 
+        center=(WIDTH//2, button_y + button_height//2), 
+        color='white', 
+        fontsize=24
+    )
+    
+    # Store button rect for click detection
+    global game_over_button
+    game_over_button = Rect(button_x, button_y, button_width, button_height)
 
 def on_mouse_down(pos):
     global game_state, hero
@@ -92,5 +151,13 @@ def on_mouse_down(pos):
         game_state = menu.handle_menu_click(pos, game_state)
     elif game_state == 'sound_menu':
         game_state = menu.handle_sound_menu_click(pos, game_state)
+    elif game_state == 'game_over':
+        # Check if Back to Menu button is clicked
+        if game_over_button.collidepoint(pos):
+            # Reset game state and hero
+            game_state = 'menu'
+            labyrinth.reset()
+            hero = Hero(start_grid=(1, 1), keyboard=keyboard, labyrinth=labyrinth, powerup_manager=powerup_manager)
+            starfield.reset()
 
 pgzrun.go()

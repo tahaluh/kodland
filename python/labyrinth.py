@@ -11,6 +11,9 @@ class Labyrinth:
         self.grid = [[1 for _ in range(width)] for _ in range(height)]
         self.discovered_grid = [[False for _ in range(width)] for _ in range(height)]
         self.speed_boost_squares = set()
+        self.extra_time = 0
+        self.initial_time_limit = 60  # 1 minute    
+        self.time_limit = self.initial_time_limit * 60  # Convert to seconds
         self.generate_maze()
         self.set_entrance_and_exit()
         self.add_speed_boost_squares()
@@ -101,8 +104,15 @@ class Labyrinth:
                 if self.grid[y][x] == 3:
                     return x, y
         return None
+    
+    def update(self):
+        if self.extra_time > 0:
+            self.extra_time -= 1
+        else:
+            self.time_limit -= 1
 
     def draw_labyrinth(self, screen):
+        
         for y in range(self.height):
             for x in range(self.width):
                 tile_x = x * TILE_SIZE
@@ -153,8 +163,14 @@ class Labyrinth:
                 screen.draw.line((rect_x + TILE_SIZE, rect_y), (rect_x + TILE_SIZE, rect_y + TILE_SIZE), border_color)
                 screen.draw.line((rect_x + TILE_SIZE, rect_y + TILE_SIZE), (rect_x, rect_y + TILE_SIZE), border_color)
                 screen.draw.line((rect_x, rect_y + TILE_SIZE), (rect_x, rect_y), border_color)
+                
+        
 
     def reset(self):
+        self.initial_time_limit -= 5
+        if self.initial_time_limit < 0:
+            self.initial_time_limit = 5
+        self.time_limit = self.initial_time_limit * 60
         self.grid = [[1 for _ in range(self.width)] for _ in range(self.height)]
         self.discovered_grid = [[False for _ in range(self.width)] for _ in range(self.height)]
         self.speed_boost_squares.clear()

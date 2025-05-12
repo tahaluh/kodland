@@ -18,7 +18,7 @@ class PowerupManager:
             hero.actor.speed *= 1.5
             hero.speed_boost_start_time = settings.tick
         elif powerup['effect'] == 'time':
-            settings.tick += 600
+            hero.labyrinth.extra_time += 10 * 60
         elif powerup['effect'] == 'vision':
             hero.vision_radius += 1
             hero.vision_boost_start_time = settings.tick
