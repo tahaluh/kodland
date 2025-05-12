@@ -51,9 +51,7 @@ def draw_game():
     hero.draw(screen)
     
     # Maze counter and timer
-    current_time = settings.tick
-    elapsed_time = (current_time - hero.start_time) // 60  # Convert to seconds
-    reaming_time = (labyrinth.time_limit - elapsed_time) // 60  # Convert to seconds
+    reaming_time = labyrinth.time_limit // 60
     
     # Draw maze number
     screen.draw.text(
@@ -79,11 +77,9 @@ def update():
         labyrinth.update()
         
         # Check for game over conditions
-        current_time = settings.tick
-        elapsed_time = (current_time - hero.start_time) // 60
-        remaining_time = (labyrinth.time_limit - elapsed_time) // 60
+        reaming_time = labyrinth.time_limit // 60
         
-        if remaining_time <= 0:
+        if reaming_time <= 0:
             game_state = 'game_over'
         
         # Handle powerup menu input
@@ -99,7 +95,6 @@ def update():
             
         if labyrinth.time_limit <= 0:
             game_state = 'game_over'
-            sound_manager.play_sound('game_over')
     settings.tick += 1
 
 def draw_game_over():
@@ -152,12 +147,8 @@ def on_mouse_down(pos):
     elif game_state == 'sound_menu':
         game_state = menu.handle_sound_menu_click(pos, game_state)
     elif game_state == 'game_over':
-        # Check if Back to Menu button is clicked
         if game_over_button.collidepoint(pos):
-            # Reset game state and hero
             game_state = 'menu'
-            labyrinth.reset()
+            labyrinth = Labyrinth(COLS, ROWS)
             hero = Hero(start_grid=(1, 1), keyboard=keyboard, labyrinth=labyrinth, powerup_manager=powerup_manager)
-            starfield.reset()
-
 pgzrun.go()

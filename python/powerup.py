@@ -9,7 +9,7 @@ class PowerupManager:
 
     POWERUP_OPTIONS = [
         {"name": "Speed Boost", "description": "+50% speed for 10s", "effect": "speed", "duration": 600},
-        {"name": "Time Freeze", "description": "+10 seconds", "effect": "time", "duration": 600},
+        {"name": "Time Rewind", "description": "+10 seconds", "effect": "time", "duration": 600},
         {"name": "Vision Boost", "description": "+1 tile vision radius", "effect": "vision", "duration": 600}
     ]
 
@@ -18,7 +18,7 @@ class PowerupManager:
             hero.actor.speed *= 1.5
             hero.speed_boost_start_time = settings.tick
         elif powerup['effect'] == 'time':
-            hero.labyrinth.extra_time += 10 * 60
+            hero.labyrinth.time_limit += 10 * 60
         elif powerup['effect'] == 'vision':
             hero.vision_radius += 1
             hero.vision_boost_start_time = settings.tick
@@ -39,9 +39,10 @@ class PowerupManager:
         return random.choice(self.POWERUP_OPTIONS)
 
     @classmethod
-    def draw_powerup_menu(self, screen, selected_powerup):
+    def draw_powerup_menu(self, screen, selected_powerup, hero):
         from settings import WIDTH, HEIGHT
 
+        hero.labyrinth.extra_time += 1 
         screen.draw.filled_rect(Rect(0, 0, WIDTH, HEIGHT), color=(0, 0, 0, 128))
 
         screen.draw.text('Choose Your Power-Up', center=(WIDTH//2, HEIGHT//4), color='white', fontsize=36)

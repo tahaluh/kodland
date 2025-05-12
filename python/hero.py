@@ -3,14 +3,13 @@ from settings import TILE_SIZE, HERO_COLOR, COLS, ROWS
 from pgzero.actor import Actor
 
 class Hero:
-    def __init__(self, start_grid=(1, 1), keyboard=None, current_maze=1, start_time=None, labyrinth=None, powerup_manager=None):
+    def __init__(self, start_grid=(1, 1), keyboard=None, current_maze=1, labyrinth=None, powerup_manager=None):
         self.powerup_manager = powerup_manager
         self.keyboard = keyboard
         self.prefix = f'alien_{HERO_COLOR}'
         self.flipped = 0
 
         self.current_maze = current_maze
-        self.start_time = start_time or settings.tick
 
         self.labyrinth = labyrinth
         start_grid = self.labyrinth.get_entrance()
@@ -125,7 +124,7 @@ class Hero:
         
         # Draw powerup menu if active
         if self.show_powerup_menu:
-            self.powerup_manager.draw_powerup_menu(screen, self.selected_powerup)
+            self.powerup_manager.draw_powerup_menu(screen, self.selected_powerup, self)
         
     def handle_powerup_menu_input(self):
         if not self.show_powerup_menu or not self.keyboard:
@@ -138,7 +137,6 @@ class Hero:
             self.show_powerup_menu = False
         
     def pass_maze(self):
-        self.start_time = settings.tick
         self.current_maze += 1
         
         start_grid = self.labyrinth.get_entrance()

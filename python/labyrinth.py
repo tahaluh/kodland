@@ -1,5 +1,4 @@
 import random
-import pygame
 import settings
 from pgzero.rect import Rect
 from settings import TILE_SIZE
@@ -11,8 +10,10 @@ class Labyrinth:
         self.grid = [[1 for _ in range(width)] for _ in range(height)]
         self.discovered_grid = [[False for _ in range(width)] for _ in range(height)]
         self.speed_boost_squares = set()
+        
+        self.start_time = settings.tick
         self.extra_time = 0
-        self.initial_time_limit = 60  # 1 minute    
+        self.initial_time_limit = 5  # 1 minute    
         self.time_limit = self.initial_time_limit * 60  # Convert to seconds
         self.generate_maze()
         self.set_entrance_and_exit()
@@ -164,9 +165,8 @@ class Labyrinth:
                 screen.draw.line((rect_x + TILE_SIZE, rect_y + TILE_SIZE), (rect_x, rect_y + TILE_SIZE), border_color)
                 screen.draw.line((rect_x, rect_y + TILE_SIZE), (rect_x, rect_y), border_color)
                 
-        
-
     def reset(self):
+        self.start_time = settings.tick
         self.initial_time_limit -= 5
         if self.initial_time_limit < 0:
             self.initial_time_limit = 5
