@@ -9,6 +9,7 @@ from stars import StarField
 from labyrinth import Labyrinth
 from powerup import PowerupManager
 from ghost import Ghost
+from projectile import Projectile
 
 game_state    = 'menu'
 game_over_button = None  # Will be set in draw_game_over()
@@ -58,6 +59,10 @@ def draw_game():
     for ghost in ghosts:
         ghost.draw(screen)
     
+    # Draw projectiles
+    for projectile in hero.projectiles:
+        projectile.draw(screen)
+    
     hero.draw(screen)
     
     # Maze counter and timer
@@ -80,11 +85,36 @@ def draw_game():
     )
 
 def update():
-    global game_state, hero
+    global game_state, hero, ghosts
     if game_state == 'game':
         hero.update()
         starfield.update()
         labyrinth.update()
+        
+        # Projectile shooting
+        if keyboard.space and hero.projectile_timer >= hero.projectile_cooldown:
+            # Create a new projectile in the last movement direction
+            start_pos = (
+                hero.actor.grid_pos[0] * settings.TILE_SIZE + settings.TILE_SIZE // 2, 
+                hero.actor.grid_pos[1] * settings.TILE_SIZE + settings.TILE_SIZE // 2
+            )
+            hero.projectiles.append(Projectile(start_pos, hero.last_move_direction))
+            hero.projectile_timer = 0
+        
+        hero.projectile_timer += 1
+        
+        # Update and check projectiles
+        for projectile in hero.projectiles.copy():
+            projectile.update(labyrinth)
+            
+            # Check ghost collision
+            removed_ghosts = projectile.check_ghost_collision(ghosts)
+            for ghost in removed_ghosts:
+                ghosts.remove(ghost)
+            
+            # Remove inactive projectiles
+            if not projectile.active:
+                hero.projectiles.remove(projectile)
         
         # Update and check ghosts
         for ghost in ghosts:

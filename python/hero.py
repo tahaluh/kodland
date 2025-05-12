@@ -32,12 +32,20 @@ class Hero:
         self.anim_timer = 0
         
         self.show_powerup_menu = False
-        self.selected_powerup = 0
+        self.selected_powerup = None
 
-        # Invulnerability mechanics
         self.is_invulnerable = False
-        self.invulnerability_duration = 180  # 3 seconds at 60 ticks per second
+        self.invulnerability_duration = 180  
         self.invulnerability_timer = 0
+
+        self.last_move_direction = (1, 0)
+
+        self.projectile_speed = 5
+        self.projectile_cooldown = 10
+        self.projectile_timer = 0
+        self.projectiles = []
+        self.space_pressed = False
+        self.space_released = True
 
         self.labyrinth.discover_around_player(start_grid[0], start_grid[1], radius=self.vision_radius)
 
@@ -73,6 +81,9 @@ class Hero:
                 self.actor.y += self.actor.speed if dy > 0 else -self.actor.speed
             else:
                 self.actor.y = ty
+
+            if dx != 0 or dy != 0:
+                self.last_move_direction = (dx, dy)
 
             if self.actor.x == tx and self.actor.y == ty:
                 self.actor.grid_pos = list(self.actor.target_pos)
@@ -124,17 +135,12 @@ class Hero:
                     self.actor.image = idle_frames[self.idle_frame]
 
     def draw(self, screen):
-        """Draw the hero on the screen"""
-        # Blinking effect when invulnerable
         if self.is_invulnerable:
-            # Blink every 10 ticks
             if (self.invulnerability_timer // 10) % 2 == 0:
                 self.actor.draw()
         else:
-            # Normal drawing when not invulnerable
             self.actor.draw()
         
-        # Draw powerup menu if active
         if self.show_powerup_menu:
             self.powerup_manager.draw_powerup_menu(screen, self.selected_powerup, self)
         
@@ -147,6 +153,20 @@ class Hero:
             selected_powerup = self.powerup_manager.POWERUP_OPTIONS[self.selected_powerup]
             self.powerup_manager.apply_powerup(self, selected_powerup)
             self.show_powerup_menu = False
+        if self.keyboard.space and self.projectile_timer >= self.projectile_cooldown and self.space_released:
+            # Create a new projectile in the last movement direction
+            start_pos = (
+                self.actor.grid_pos[0] * settings.TILE_SIZE + settings.TILE_SIZE // 2, 
+                self.actor.grid_pos[1] * settings.TILE_SIZE + settings.TILE_SIZE // 2
+            )
+            self.projectiles.append(Projectile(start_pos, self.last_move_direction))
+            self.projectile_timer = 0
+            self.space_pressed = True
+            self.space_released = False
+        
+        if not self.keyboard.space:
+            self.space_pressed = False
+            self.space_released = True
         
     def pass_maze(self):
         self.current_maze += 1
@@ -162,5 +182,4 @@ class Hero:
         self.actor.target_pos = list(start_grid)
         self.labyrinth.discover_around_player(start_grid[0], start_grid[1], radius=self.vision_radius)
         
-        # Reset speed to base speed
         self.actor.speed = self.base_speed

@@ -57,8 +57,10 @@ class Labyrinth:
             y = random.randrange(1, self.height-1, 2)
             self.grid[y][self.width-1] = 3
 
-    def add_speed_boost_squares(self, num_squares=10):
+    def add_speed_boost_squares(self):
         attempts = 0
+        num_squares = random.randint(5, 10)
+        # Ensure at least 5 speed boost squares
         while len(self.speed_boost_squares) < num_squares and attempts < 100:
             x = random.randrange(1, self.width-1)
             y = random.randrange(1, self.height-1)
