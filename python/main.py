@@ -8,8 +8,7 @@ from hero import Hero
 from stars import StarField 
 from labyrinth import Labyrinth
 from powerup import PowerupManager
-
-
+from ghost import Ghost
 
 game_state    = 'menu'
 game_over_button = None  # Will be set in draw_game_over()
@@ -19,7 +18,14 @@ menu          = MenuManager(sound_manager)
 labyrinth     = Labyrinth(COLS, ROWS)
 powerup_manager = PowerupManager()
 hero          = Hero(start_grid=(1, 1), keyboard=keyboard, labyrinth=labyrinth, powerup_manager=powerup_manager)
-starfield     = StarField(count=200, big_chance=0.05, big_radius=2) 
+starfield     = StarField(count=200, big_chance=0.05, big_radius=2)
+
+# Ghost management
+ghosts = []
+def spawn_ghosts(num_ghosts=3):
+    global ghosts
+    ghosts = [Ghost(labyrinth) for _ in range(num_ghosts)]
+spawn_ghosts()
 
 def draw():
     screen.clear()
@@ -47,6 +53,10 @@ def draw_game():
         screen.draw.line((x, 0), (x, HEIGHT), grid_color)
     for y in range(0, HEIGHT+1, TILE_SIZE):
         screen.draw.line((0, y), (WIDTH, y), grid_color)
+    
+    # Draw ghosts
+    for ghost in ghosts:
+        ghost.draw(screen)
     
     hero.draw(screen)
     
@@ -76,6 +86,24 @@ def update():
         starfield.update()
         labyrinth.update()
         
+        # Update and check ghosts
+        for ghost in ghosts:
+            ghost.update()
+            
+            # Check ghost collision with hero
+            if ghost.check_collision(hero):
+                # Reduce time by 5 seconds
+                labyrinth.time_limit -= 300  # 5 seconds at 60 ticks per second
+                hero.is_invulnerable = True
+                hero.invulnerability_timer = 0
+        
+        # Manage hero invulnerability
+        if hero.is_invulnerable:
+            hero.invulnerability_timer += 1
+            if hero.invulnerability_timer >= hero.invulnerability_duration:
+                hero.is_invulnerable = False
+                hero.invulnerability_timer = 0
+        
         # Check for game over conditions
         reaming_time = labyrinth.time_limit // 60
         
@@ -92,6 +120,7 @@ def update():
         if hero.has_reached_exit():
             labyrinth.reset()
             hero.pass_maze()
+            spawn_ghosts()  # Respawn ghosts on new maze
             
         if labyrinth.time_limit <= 0:
             game_state = 'game_over'

@@ -8,9 +8,9 @@ class PowerupManager:
         self.last_move_tick = -999
 
     POWERUP_OPTIONS = [
-        {"name": "Speed Boost", "description": "+50% speed for 10s", "effect": "speed", "duration": 600},
+        {"name": "Speed Boost", "description": "+1 speed for 10s", "effect": "speed", "duration": 600},
         {"name": "Time Rewind", "description": "+10 seconds", "effect": "time", "duration": 600},
-        {"name": "Vision Boost", "description": "+1 tile vision radius", "effect": "vision", "duration": 600}
+        {"name": "Vision Boost", "description": "+1 vision", "effect": "vision", "duration": 600}
     ]
 
     def apply_powerup(self, hero, powerup):

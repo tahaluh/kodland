@@ -13,7 +13,7 @@ class Labyrinth:
         
         self.start_time = settings.tick
         self.extra_time = 0
-        self.initial_time_limit = 5  # 1 minute    
+        self.initial_time_limit = 60  # 1 minute    
         self.time_limit = self.initial_time_limit * 60  # Convert to seconds
         self.generate_maze()
         self.set_entrance_and_exit()
@@ -69,7 +69,7 @@ class Labyrinth:
                 self.speed_boost_squares.add((x, y))
             
             attempts += 1
-                
+
     def discover_around_player(self, player_x, player_y, radius=1):
         for dy in range(-radius, radius + 1):
             for dx in range(-radius, radius + 1):
@@ -79,6 +79,8 @@ class Labyrinth:
 
 
     def is_wall(self, x, y):
+        if x < 0 or x >= self.width or y < 0 or y >= self.height:
+            return True
         return self.grid[y][x] == 1
 
     def is_speed_boost_square(self, x, y):

@@ -30,10 +30,14 @@ class Hero:
         self.walk_frame = 0
         self.idle_frame = 0
         self.anim_timer = 0
-
-        # Powerup menu attributes
+        
         self.show_powerup_menu = False
         self.selected_powerup = 0
+
+        # Invulnerability mechanics
+        self.is_invulnerable = False
+        self.invulnerability_duration = 180  # 3 seconds at 60 ticks per second
+        self.invulnerability_timer = 0
 
         self.labyrinth.discover_around_player(start_grid[0], start_grid[1], radius=self.vision_radius)
 
@@ -78,7 +82,7 @@ class Hero:
                 
                 x, y = self.actor.grid_pos
                 if self.labyrinth.is_speed_boost_square(x, y):
-                    self.selected_powerup = 0  # Default to first powerup
+                    self.selected_powerup = 0  
                     self.show_powerup_menu = True
                     self.labyrinth.remove_speed_boost_square(x, y)
                 
@@ -120,7 +124,15 @@ class Hero:
                     self.actor.image = idle_frames[self.idle_frame]
 
     def draw(self, screen):
-        self.actor.draw()
+        """Draw the hero on the screen"""
+        # Blinking effect when invulnerable
+        if self.is_invulnerable:
+            # Blink every 10 ticks
+            if (self.invulnerability_timer // 10) % 2 == 0:
+                self.actor.draw()
+        else:
+            # Normal drawing when not invulnerable
+            self.actor.draw()
         
         # Draw powerup menu if active
         if self.show_powerup_menu:
