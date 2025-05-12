@@ -65,18 +65,14 @@ class Labyrinth:
                 self.speed_boost_squares.add((x, y))
             
             attempts += 1
+                
+    def discover_around_player(self, player_x, player_y, radius=1):
+        for dy in range(-radius, radius + 1):
+            for dx in range(-radius, radius + 1):
+                nx, ny = player_x + dx, player_y + dy
+                if 0 <= nx < self.width and 0 <= ny < self.height:
+                    self.discovered_grid[ny][nx] = True
 
-    def discover_around_player(self, player_x, player_y):
-        adjacent_offsets = [
-            (-1, -1), (-1, 0), (-1, 1),
-            (0, -1), (0, 1),
-            (1, -1), (1, 0), (1, 1)
-        ]
-        
-        for dx, dy in adjacent_offsets:
-            nx, ny = player_x + dx, player_y + dy
-            if (0 <= nx < self.width and 0 <= ny < self.height):
-                self.discovered_grid[ny][nx] = True
 
     def is_wall(self, x, y):
         return self.grid[y][x] == 1

@@ -3,7 +3,8 @@ from settings import TILE_SIZE, HERO_COLOR, COLS, ROWS
 from pgzero.actor import Actor
 
 class Hero:
-    def __init__(self, start_grid=(1, 1), keyboard=None, current_maze=1, start_time=None, labyrinth=None):
+    def __init__(self, start_grid=(1, 1), keyboard=None, current_maze=1, start_time=None, labyrinth=None, powerup_manager=None):
+        self.powerup_manager = powerup_manager
         self.keyboard = keyboard
         self.prefix = f'alien_{HERO_COLOR}'
         self.flipped = 0
@@ -24,12 +25,18 @@ class Hero:
         self.base_speed = 10
         self.speed_boosts_collected = 0  
         self.actor.speed = self.base_speed
+        
+        self.vision_radius = 1
 
         self.walk_frame = 0
         self.idle_frame = 0
         self.anim_timer = 0
 
-        self.labyrinth.discover_around_player(start_grid[0], start_grid[1])
+        # Powerup menu attributes
+        self.show_powerup_menu = False
+        self.selected_powerup = 0
+
+        self.labyrinth.discover_around_player(start_grid[0], start_grid[1], radius=self.vision_radius)
 
     def has_reached_exit(self):
         exit_pos = self.labyrinth.get_exit()
@@ -72,12 +79,12 @@ class Hero:
                 
                 x, y = self.actor.grid_pos
                 if self.labyrinth.is_speed_boost_square(x, y):
-                    print(f"Speed boost activated! +50% speed")
-                    self.actor.speed = self.actor.speed * 1.5
+                    self.selected_powerup = 0  # Default to first powerup
+                    self.show_powerup_menu = True
                     self.labyrinth.remove_speed_boost_square(x, y)
                 
                 self.labyrinth.discover_around_player(
-                    self.actor.grid_pos[0], self.actor.grid_pos[1]
+                    self.actor.grid_pos[0], self.actor.grid_pos[1], radius=self.vision_radius
                 )
             else:
                 self.anim_timer += 1
@@ -113,8 +120,22 @@ class Hero:
                     _, idle_frames = self.get_current_frames()
                     self.actor.image = idle_frames[self.idle_frame]
 
-    def draw(self):
+    def draw(self, screen):
         self.actor.draw()
+        
+        # Draw powerup menu if active
+        if self.show_powerup_menu:
+            self.powerup_manager.draw_powerup_menu(screen, self.selected_powerup)
+        
+    def handle_powerup_menu_input(self):
+        if not self.show_powerup_menu or not self.keyboard:
+            return
+       
+        self.selected_powerup = self.powerup_manager.handle_selection_input(self.keyboard, self.selected_powerup)
+        if self.keyboard.space:
+            selected_powerup = self.powerup_manager.POWERUP_OPTIONS[self.selected_powerup]
+            self.powerup_manager.apply_powerup(self, selected_powerup)
+            self.show_powerup_menu = False
         
     def pass_maze(self):
         self.start_time = settings.tick
@@ -129,7 +150,7 @@ class Hero:
         self.actor.y = y
         self.actor.grid_pos = list(start_grid)
         self.actor.target_pos = list(start_grid)
-        self.labyrinth.discover_around_player(start_grid[0], start_grid[1])
+        self.labyrinth.discover_around_player(start_grid[0], start_grid[1], radius=self.vision_radius)
         
-        
-        
+        # Reset speed to base speed
+        self.actor.speed = self.base_speed

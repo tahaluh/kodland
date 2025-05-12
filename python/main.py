@@ -7,13 +7,17 @@ from sounds import SoundManager
 from hero import Hero
 from stars import StarField 
 from labyrinth import Labyrinth
+from powerup import PowerupManager
+
+
 
 game_state    = 'menu'
 sound_manager = SoundManager(music, sounds)
 sound_manager.start_music()
 menu          = MenuManager(sound_manager)
 labyrinth     = Labyrinth(COLS, ROWS)
-hero          = Hero(start_grid=(1, 1), keyboard=keyboard, labyrinth=labyrinth)
+powerup_manager = PowerupManager()
+hero          = Hero(start_grid=(1, 1), keyboard=keyboard, labyrinth=labyrinth, powerup_manager=powerup_manager)
 starfield     = StarField(count=200, big_chance=0.05, big_radius=2) 
 
 def draw():
@@ -41,7 +45,7 @@ def draw_game():
     for y in range(0, HEIGHT+1, TILE_SIZE):
         screen.draw.line((0, y), (WIDTH, y), grid_color)
     
-    hero.draw()
+    hero.draw(screen)
     
     # Maze counter and timer
     current_time = settings.tick
@@ -68,6 +72,13 @@ def update():
     if game_state == 'game':
         hero.update()
         starfield.update()
+        
+        # Handle powerup menu input
+        if hero.show_powerup_menu:
+            hero.handle_powerup_menu_input()
+        
+        # Update powerup effects
+        PowerupManager.update_powerup_effects(hero=hero)
          
         if hero.has_reached_exit():
             labyrinth.reset()
